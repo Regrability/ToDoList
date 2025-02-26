@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -97,21 +98,48 @@ fun SortingButton(onSortSelected: (Int) -> Unit) {
 @Composable
 fun MessageCard(
     message: TaskInfo,
+    onNavigateToTask: () -> Unit,
+    onToggleTaskCompletion: (TaskInfo) -> Unit,
+    onDeleteTask: (TaskInfo) -> Unit
 ) {
     var borderColor = DAILYColor
     if (message.lvl == TaskLevel.WEEKLY) borderColor = WEEKLYColor
     if (message.lvl == TaskLevel.MONTHLY) borderColor = MONTHLYColor
     if (message.lvl == TaskLevel.YEARLY) borderColor = YEARLYColor
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            confirmButton = {
+                Button(onClick = {
+                    onDeleteTask(message)
+                    showDeleteDialog = false
+                },
+                    colors = ButtonDefaults.buttonColors(containerColor = SecondColor)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog = false },colors = ButtonDefaults.buttonColors(containerColor = SecondColor)) {
+                    Text(" Back ")
+                }
+            },
+            title = { Text("Delete task?") },
+            text = { Text("Are you sure, you want to delete this task?") }
+        )
+    }
+
     Surface(
         modifier = Modifier
             .padding(8.dp)
             .border(2.dp, borderColor, MaterialTheme.shapes.medium)
             .combinedClickable(
-                onClick = { },
-                onLongClick = {
-                    // goToRoomScreen(message.id)
-                }
+                onClick = { onNavigateToTask() },
+                onDoubleClick = { onToggleTaskCompletion(message) },
+                onLongClick = { showDeleteDialog = true }
             ),
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 2.dp
@@ -120,10 +148,10 @@ fun MessageCard(
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically // Центрирование элементов по вертикали
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.weight(1f) // Занимает всю доступную ширину, оставляя место для чекбокса
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = message.title,
@@ -144,17 +172,17 @@ fun MessageCard(
                 )
             }
 
-            // Увеличенный чекбокс справа
             Checkbox(
                 checked = message.completed,
-                onCheckedChange = null, // Только для отображения
+                onCheckedChange = { onToggleTaskCompletion(message) },
                 modifier = Modifier
-                    .size(64.dp) // Увеличенный размер чекбокса
+                    .size(64.dp)
                     .padding(start = 8.dp)
             )
         }
     }
 }
+
 
 
 
@@ -167,6 +195,16 @@ fun MainScreen(navManager: NavManager) {
 
     LaunchedEffect(sortId) {
         tasks = sortTasks(tasks, sortId)
+    }
+
+    fun toggleTaskCompletion(task: TaskInfo) {
+        tasks = tasks.map {
+            if (it.id == task.id) it.copy(completed = !it.completed) else it
+        }
+    }
+
+    fun deleteTask(task: TaskInfo) {
+        tasks = tasks.filter { it.id != task.id }
     }
 
     Surface(modifier = Modifier.fillMaxSize(), color = FonColor) {
@@ -217,7 +255,12 @@ fun MainScreen(navManager: NavManager) {
 
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(tasks) { task ->
-                        MessageCard(message = task)
+                        MessageCard(
+                            message = task,
+                            onNavigateToTask = {navManager.navigateToTaskScreen()},
+                            onToggleTaskCompletion = ::toggleTaskCompletion,
+                            onDeleteTask = ::deleteTask
+                        )
                     }
                 }
             }

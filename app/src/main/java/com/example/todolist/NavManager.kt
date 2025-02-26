@@ -12,6 +12,7 @@ import com.example.todolist.activity.HelloScreen
 import com.example.todolist.activity.LoginScreen
 import com.example.todolist.activity.MainScreen
 import com.example.todolist.activity.RegisterScreen
+import com.example.todolist.activity.TaskScreen
 import com.example.todolist.ui.theme.ToDoListTheme
 
 class NavManager(private val navController: NavController) {
@@ -29,6 +30,10 @@ class NavManager(private val navController: NavController) {
 
     fun navigateToDoTaskScreen() {
         navController.navigate("do_task_screen")
+    }
+
+    fun navigateToTaskScreen() {
+        navController.navigate("task_screen")
     }
 
     fun goBack() {
@@ -67,6 +72,9 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
         }
         composable("do_task_screen") {
             DoTaskScreen(navManager)
+        }
+        composable("task_screen") {
+            TaskScreen(navManager)
         }
     }
 
