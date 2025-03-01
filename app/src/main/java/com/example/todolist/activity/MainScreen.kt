@@ -257,7 +257,7 @@ fun MainScreen(navManager: NavManager) {
                     items(tasks) { task ->
                         MessageCard(
                             message = task,
-                            onNavigateToTask = {navManager.navigateToTaskScreen()},
+                            onNavigateToTask = {navManager.navigateToTaskScreen(task)},
                             onToggleTaskCompletion = ::toggleTaskCompletion,
                             onDeleteTask = ::deleteTask
                         )

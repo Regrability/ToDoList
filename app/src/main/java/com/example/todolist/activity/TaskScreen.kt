@@ -52,7 +52,7 @@ import java.time.format.TextStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(navManager: NavManager) {
+fun TaskScreen(navManager: NavManager, taskId : Int) {
 
     var title by remember { mutableStateOf("") }
     var info by remember { mutableStateOf("") }

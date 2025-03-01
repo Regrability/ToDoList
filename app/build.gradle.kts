@@ -74,4 +74,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.accompanist.navigation.animation)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+
+
 }
