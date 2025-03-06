@@ -13,6 +13,7 @@ import com.example.todolist.activity.LoginScreen
 import com.example.todolist.activity.MainScreen
 import com.example.todolist.activity.RegisterScreen
 import com.example.todolist.activity.TaskScreen
+import com.example.todolist.activity.TaskScreenGet
 import com.example.todolist.entity.TaskInfo
 import com.example.todolist.ui.theme.ToDoListTheme
 
@@ -57,7 +58,7 @@ class NavManager(private val navController: NavController) {
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
     val navManager = remember { NavManager(navController) } // Создаём экземпляр NavManager
 
-    NavHost(navController = navController, startDestination = "hello_screen") {
+    NavHost(navController = navController, startDestination = "task_get_screen") {
 
         composable("hello_screen") {
             HelloScreen(navManager)
@@ -83,6 +84,10 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
                  // Ошибка, если taskId не передан
             }
         }
+        composable("task_get_screen") {
+            TaskScreenGet()
+        }
+
     }
 
 }
