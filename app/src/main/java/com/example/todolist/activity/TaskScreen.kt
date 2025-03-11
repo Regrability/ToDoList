@@ -140,7 +140,7 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
                 onClick = {
 
 
-                    navManager.navigateToMainScreen()
+                    //navManager.navigateToMainScreen()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

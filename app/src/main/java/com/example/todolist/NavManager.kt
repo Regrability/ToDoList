@@ -1,22 +1,17 @@
 package com.example.todolist
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.todolist.activity.DoTaskScreen
-import com.example.todolist.activity.HelloScreen
-import com.example.todolist.activity.LoginScreen
-import com.example.todolist.activity.MainScreen
-import com.example.todolist.activity.RegisterScreen
-import com.example.todolist.activity.TaskScreen
+import com.example.todolist.activity.*
 import com.example.todolist.entity.TaskInfo
-import com.example.todolist.ui.theme.ToDoListTheme
 
-class NavManager(private val navController: NavController) {
+class NavManager(private val navController: NavController, private val userIdState: MutableState<Int?>) {
+
     fun navigateToLogin() {
         navController.navigate("login_screen")
     }
@@ -25,8 +20,20 @@ class NavManager(private val navController: NavController) {
         navController.navigate("register_screen")
     }
 
-    fun navigateToMainScreen() {
+    // Устанавливаем userId и переходим на главный экран
+    fun navigateToMainScreen(user_id: Int) {
+        userIdState.value = user_id
         navController.navigate("main_screen")
+    }
+
+    // Переход на главный экран, используя сохранённый userId
+    fun navigateToMainScreen() {
+        if (userIdState.value != null) {
+            navController.navigate("main_screen")
+        } else {
+            // Здесь можно обработать случай, когда userId не установлен
+            //TODO
+        }
     }
 
     fun navigateToDoTaskScreen() {
@@ -50,12 +57,13 @@ class NavManager(private val navController: NavController) {
             popUpTo(0) // Удаляет весь стек
         }
     }
-
 }
 
 @Composable
 fun AppNavHost(navController: NavHostController = rememberNavController()) {
-    val navManager = remember { NavManager(navController) } // Создаём экземпляр NavManager
+
+    val userId = rememberSaveable { mutableStateOf<Int?>(null) } // Переменная для хранения user_id
+    val navManager = remember { NavManager(navController, userId) } // Создаём экземпляр NavManager
 
     NavHost(navController = navController, startDestination = "hello_screen") {
 
@@ -69,7 +77,12 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             RegisterScreen(navManager)
         }
         composable("main_screen") {
-            MainScreen(navManager)
+            val currentUserId = userId.value
+            if (currentUserId != null) {
+                MainScreen(navManager, currentUserId)
+            } else {
+                // Ошибка, если userId не установлен
+            }
         }
         composable("do_task_screen") {
             DoTaskScreen(navManager)
@@ -80,10 +93,8 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             if (taskId != null) {
                 TaskScreen(navManager, taskId)
             } else {
-                 // Ошибка, если taskId не передан
+                // Ошибка, если taskId не передан
             }
         }
-
     }
-
 }

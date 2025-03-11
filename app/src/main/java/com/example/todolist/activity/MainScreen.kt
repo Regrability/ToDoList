@@ -27,6 +27,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todolist.NavManager
 import com.example.todolist.entity.TaskInfo
 import com.example.todolist.entity.TaskLevel
@@ -183,18 +185,25 @@ fun MessageCard(
     }
 }
 
-
-
-
-
-
 @Composable
-fun MainScreen(navManager: NavManager) {
+fun MainScreen(navManager: NavManager, user_id: Int) {
+    val viewModel: MyViewModel = viewModel()
     var sortId by remember { mutableStateOf(0) }
-    var tasks by remember { mutableStateOf(getInitialTasks()) }
+
+    val taskList by viewModel.tasks.collectAsState() // Подписка на StateFlow
+
+    var tasks by remember { mutableStateOf(emptyList<TaskInfo>()) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getTasks(user_id)
+    }
+
+    LaunchedEffect(taskList) {
+        tasks = sortTasks(taskList, sortId) // Сразу сортируем при загрузке
+    }
 
     LaunchedEffect(sortId) {
-        tasks = sortTasks(tasks, sortId)
+        tasks = sortTasks(taskList, sortId) // Пересортировка при изменении фильтра
     }
 
     fun toggleTaskCompletion(task: TaskInfo) {
@@ -257,7 +266,7 @@ fun MainScreen(navManager: NavManager) {
                     items(tasks) { task ->
                         MessageCard(
                             message = task,
-                            onNavigateToTask = {navManager.navigateToTaskScreen(task)},
+                            onNavigateToTask = { navManager.navigateToTaskScreen(task) },
                             onToggleTaskCompletion = ::toggleTaskCompletion,
                             onDeleteTask = ::deleteTask
                         )
@@ -267,6 +276,7 @@ fun MainScreen(navManager: NavManager) {
         }
     }
 }
+
 
 fun sortTasks(tasks: List<TaskInfo>, type: Int): List<TaskInfo> {
     return when (type) {

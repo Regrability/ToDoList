@@ -199,7 +199,7 @@ fun DoTaskScreen(navManager: NavManager) {
                     // Здесь можно передавать task в базу данных или список задач
                     //println("Создана задача: $task")
 
-                    navManager.navigateToMainScreen()
+                   // navManager.navigateToMainScreen()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
