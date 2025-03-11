@@ -13,6 +13,7 @@ data class TaskInfo(
     val lvl: TaskLevel,
     val title: String,
     val info: String,
-    val completed : Boolean
+    val completed : Boolean,
+    val user_id : Int
 
 )

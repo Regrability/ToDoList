@@ -68,25 +68,14 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            Image(
-                painter = painterResource(id = R.drawable.womenaim),
-                contentDescription = "womenAim",
-                modifier = Modifier
-                    .size(240.dp)
-                    .clip(RoundedCornerShape(12.dp))
-            )
-
             Text(
-                text = "XYI",
+                text = "Task Level: ",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 color = TextColor
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-
-            // Кнопка выбора уровня задачи
-            TaskLevelSelector(selectedLevel) { selectedLevel = it }
 
             OutlinedTextField(
                 value = title,
@@ -149,16 +138,7 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
         ) {
             Button(
                 onClick = {
-                    val task = TaskInfo(
-                        id = 0, // Генерируем случайный ID (в реальности лучше использовать базу данных)
-                        lvl = selectedLevel,
-                        title = title,
-                        info = info,
-                        completed = false
-                    )
 
-                    // Здесь можно передавать task в базу данных или список задач
-                    println("Создана задача: $task")
 
                     navManager.navigateToMainScreen()
                 },
@@ -168,7 +148,7 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = SecondColor)
             ) {
-                Text(text = "CREATE", color = Color.White, fontSize = 18.sp)
+                Text(text = "Change", color = Color.White, fontSize = 18.sp)
             }
 
             Button(

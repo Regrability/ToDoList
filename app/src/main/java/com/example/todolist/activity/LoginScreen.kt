@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todolist.NavManager
 import com.example.todolist.ui.theme.FonColor
 import com.example.todolist.ui.theme.MainColor
@@ -41,6 +42,7 @@ import com.example.todolist.R
 @Composable
 fun LoginScreen(navManager: NavManager) {
 
+    val viewModel: MyViewModel = viewModel()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -116,7 +118,8 @@ fun LoginScreen(navManager: NavManager) {
                 Button(
                     onClick = {
                         println("Email: $email, Password: $password")
-                        navManager.navigateToMainScreen()
+                        viewModel.loginUser(email, password)
+                        //navManager.navigateToMainScreen()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

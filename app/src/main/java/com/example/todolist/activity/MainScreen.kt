@@ -160,7 +160,7 @@ fun MessageCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Уровень: ${message.lvl}",
+                    text = "Task Level: ${message.lvl}",
                     color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -277,26 +277,38 @@ fun sortTasks(tasks: List<TaskInfo>, type: Int): List<TaskInfo> {
         else -> tasks // если тип не найден, возвращаем исходный список
     }
 }
-
-fun getInitialTasks() = listOf(
-    TaskInfo(1, TaskLevel.DAILY, "Утренняя зарядка", "Сделать 10-минутную зарядку", true),
-    TaskInfo(2, TaskLevel.WEEKLY, "Чтение книги", "Прочитать 50 страниц книги", false),
-    TaskInfo(3, TaskLevel.MONTHLY, "Отчет по проекту", "Подготовить и сдать отчет по проекту", true),
-    TaskInfo(4, TaskLevel.YEARLY, "Медосмотр", "Пройти ежегодный медицинский осмотр", false),
-    TaskInfo(5, TaskLevel.DAILY, "Прогулка", "Пройти 5 км на свежем воздухе", true),
-    TaskInfo(6, TaskLevel.WEEKLY, "Спортзал", "Позаниматься в спортзале 3 раза в неделю", false),
-    TaskInfo(7, TaskLevel.MONTHLY, "Курс по программированию", "Пройти 10 уроков Kotlin", true),
-    TaskInfo(8, TaskLevel.YEARLY, "Отпуск", "Спланировать и провести отпуск", false),
-    TaskInfo(9, TaskLevel.DAILY, "Медитация", "Медитировать 10 минут", false),
-    TaskInfo(10, TaskLevel.WEEKLY, "Фильмы", "Посмотреть новый фильм", true),
-    TaskInfo(11, TaskLevel.MONTHLY, "Бюджет", "Спланировать расходы на месяц", false),
-    TaskInfo(12, TaskLevel.YEARLY, "Курс первой помощи", "Пройти курс оказания первой помощи", true),
-    TaskInfo(13, TaskLevel.DAILY, "Витамины", "Принимать витамины", true),
-    TaskInfo(14, TaskLevel.WEEKLY, "Прогулка в парке", "Провести вечер в парке", false),
-    TaskInfo(15, TaskLevel.MONTHLY, "Генеральная уборка", "Провести уборку в квартире", true),
-    TaskInfo(16, TaskLevel.YEARLY, "Обновить резюме", "Обновить свое резюме", false),
-    TaskInfo(17, TaskLevel.DAILY, "Пить воду", "Выпивать 2 литра воды", false),
-    TaskInfo(18, TaskLevel.WEEKLY, "Творчество", "Создать что-то новое", true),
-    TaskInfo(19, TaskLevel.MONTHLY, "Здоровье", "Пройти обследование у врача", false),
-    TaskInfo(20, TaskLevel.YEARLY, "Учеба", "Пройти новый курс", true)
-)
+    fun getInitialTasks(): List<TaskInfo> {
+        val listOf = listOf(
+            TaskInfo(
+                1,
+                TaskLevel.DAILY,
+                "Утренняя зарядка",
+                "Сделать 10-минутную зарядку",
+                true,
+                1
+            ))
+        return listOf}
+// fun getInitialTasks() = listOf(
+// TaskInfo(1, TaskLevel.DAILY, "Утренняя зарядка", "Сделать 10-минутную зарядку", true),
+// TaskInfo(2, TaskLevel.WEEKLY, "Чтение книги", "Прочитать 50 страниц книги", false),
+// TaskInfo(3, TaskLevel.MONTHLY, "Отчет по проекту", "Подготовить и сдать отчет по проекту", true),
+// TaskInfo(4, TaskLevel.YEARLY, "Медосмотр", "Пройти ежегодный медицинский осмотр", false),
+// TaskInfo(5, TaskLevel.DAILY, "Прогулка", "Пройти 5 км на свежем воздухе", true),
+// TaskInfo(6, TaskLevel.WEEKLY, "Спортзал", "Позаниматься в спортзале 3 раза в неделю", false),
+// TaskInfo(7, TaskLevel.MONTHLY, "Курс по программированию", "Пройти 10 уроков Kotlin", true),
+// TaskInfo(8, TaskLevel.YEARLY, "Отпуск", "Спланировать и провести отпуск", false),
+// TaskInfo(9, TaskLevel.DAILY, "Медитация", "Медитировать 10 минут", false),
+// TaskInfo(10, TaskLevel.WEEKLY, "Фильмы", "Посмотреть новый фильм", true),
+// TaskInfo(11, TaskLevel.MONTHLY, "Бюджет", "Спланировать расходы на месяц", false),
+// TaskInfo(12, TaskLevel.YEARLY, "Курс первой помощи", "Пройти курс оказания первой помощи", true),
+// TaskInfo(13, TaskLevel.DAILY, "Витамины", "Принимать витамины", true),
+// TaskInfo(14, TaskLevel.WEEKLY, "Прогулка в парке", "Провести вечер в парке", false),
+// TaskInfo(15, TaskLevel.MONTHLY, "Генеральная уборка", "Провести уборку в квартире", true),
+// TaskInfo(16, TaskLevel.YEARLY, "Обновить резюме", "Обновить свое резюме", false),
+// TaskInfo(17, TaskLevel.DAILY, "Пить воду", "Выпивать 2 литра воды", false),
+// TaskInfo(18, TaskLevel.WEEKLY, "Творчество", "Создать что-то новое", true),
+// TaskInfo(19, TaskLevel.MONTHLY, "Здоровье", "Пройти обследование у врача", false),
+// TaskInfo(20, TaskLevel.YEARLY, "Учеба", "Пройти новый курс", true)
+// )
+//
+// return listOf

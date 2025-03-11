@@ -185,6 +185,7 @@ fun DoTaskScreen(navManager: NavManager) {
         ) {
             Button(
                 onClick = {
+                    /*
                     val task = TaskInfo(
                         id = 0, // Генерируем случайный ID (в реальности лучше использовать базу данных)
                         lvl = selectedLevel,
@@ -193,8 +194,10 @@ fun DoTaskScreen(navManager: NavManager) {
                         completed = false
                     )
 
+                     */
+
                     // Здесь можно передавать task в базу данных или список задач
-                    println("Создана задача: $task")
+                    //println("Создана задача: $task")
 
                     navManager.navigateToMainScreen()
                 },
