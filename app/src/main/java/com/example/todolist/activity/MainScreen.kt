@@ -31,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +51,7 @@ import com.example.todolist.ui.theme.MONTHLYColor
 import com.example.todolist.ui.theme.SecondColor
 import com.example.todolist.ui.theme.WEEKLYColor
 import com.example.todolist.ui.theme.YEARLYColor
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -186,8 +188,8 @@ fun MessageCard(
 }
 
 @Composable
-fun MainScreen(navManager: NavManager, user_id: Int) {
-    val viewModel: MyViewModel = viewModel()
+fun MainScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
+
     var sortId by remember { mutableStateOf(0) }
 
     val taskList by viewModel.tasks.collectAsState() // Подписка на StateFlow
@@ -212,9 +214,16 @@ fun MainScreen(navManager: NavManager, user_id: Int) {
         }
     }
 
+    val coroutineScope = rememberCoroutineScope()
+
     fun deleteTask(task: TaskInfo) {
-        tasks = tasks.filter { it.id != task.id }
+        coroutineScope.launch {
+            viewModel.deleteTask(task.id)
+            tasks = tasks.filter { it.id != task.id }
+        }
     }
+
+
 
     Surface(modifier = Modifier.fillMaxSize(), color = FonColor) {
         Box(modifier = Modifier.fillMaxSize()) {

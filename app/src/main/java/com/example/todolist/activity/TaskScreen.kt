@@ -1,24 +1,17 @@
 package com.example.todolist.activity
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -31,32 +24,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todolist.NavManager
-import com.example.todolist.R
-import com.example.todolist.entity.TaskLevel
 import com.example.todolist.entity.TaskInfo
 import com.example.todolist.ui.theme.FonColor
 import com.example.todolist.ui.theme.SecondColor
 import com.example.todolist.ui.theme.TextColor
-import java.time.format.TextStyle
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen(navManager: NavManager, taskId : Int) {
+fun TaskScreen(navManager: NavManager, viewModel: MyViewModel, task: TaskInfo) {
 
-    var title by remember { mutableStateOf("") }
-    var info by remember { mutableStateOf("") }
-    var selectedLevel by remember { mutableStateOf(TaskLevel.DAILY) } // Состояние для уровня задачи
+    var title by remember { mutableStateOf(task.title) }
+    var info by remember { mutableStateOf(task.info) }
+    var selectedLevel by remember { mutableStateOf(task.lvl) } // Загружаем уровень задачи
 
     Surface(modifier = Modifier.fillMaxSize(), color = FonColor) {
         Column(
@@ -69,7 +58,7 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "Task Level: ",
+                text = "Task Level: $selectedLevel",
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
                 color = TextColor
@@ -138,9 +127,9 @@ fun TaskScreen(navManager: NavManager, taskId : Int) {
         ) {
             Button(
                 onClick = {
-
-
-                    //navManager.navigateToMainScreen()
+                    val updatedTask = task.copy(title = title, info = info)
+                    viewModel.updateTaskSafe(updatedTask) // Используем безопасный вызов
+                    navManager.navigateToMainScreen()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

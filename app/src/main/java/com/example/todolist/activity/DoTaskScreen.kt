@@ -200,16 +200,11 @@ fun DoTaskScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
                         completed = false,
                         user_id = user_id
                     )
-                    coroutineScope.launch {
-                        val isOk = viewModel.addTask(task)
-                        if (isOk == true) {
-                            navManager.navigateToMainScreen()
-                            Toast.makeText(context, "success add task", Toast.LENGTH_SHORT).show()
-                        } else {
-                            errorMessage = "Error add task"
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    }
+
+                        val isOk = viewModel.addTaskSafe(task)
+                        navManager.navigateToMainScreen()
+
+
 
                 }
                           },

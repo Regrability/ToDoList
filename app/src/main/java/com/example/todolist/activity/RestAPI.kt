@@ -18,8 +18,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 // Модель для запроса входа
@@ -41,7 +43,7 @@ data class TaskRequest(
     val info: String,
     val taskLvl: String,
     val done: Boolean,
-    val user: Int
+    val userId: Int
 )
 
 data class TaskResponse(
@@ -70,7 +72,7 @@ fun TaskInfo.toTaskRequest(): TaskRequest {
         info = this.info,
         taskLvl = this.lvl.name.lowercase(),
         done = this.completed,
-        user = this.user_id
+        userId = this.user_id
     )
 }
 
@@ -88,6 +90,14 @@ interface ApiService {
 
     @GET("tasks/user/{userId}")
     suspend fun getTasksByUserId(@Path("userId") userId: Int): Response<List<TaskResponse>>
+
+    @DELETE("tasks/delete/{taskId}")
+    suspend fun deleteTask(@Path("taskId") taskId: Int): Response<Void>
+
+    @PUT("tasks/update/{taskId}")
+    suspend fun updateTask(@Path("taskId") taskId: Int, @Body request: TaskRequest): Response<Void>
+
+
 
 }
 
@@ -111,6 +121,19 @@ class MyViewModel : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+
+    fun updateTaskSafe(task: TaskInfo) {
+        viewModelScope.launch {
+            updateTask(task)
+        }
+    }
+
+    fun addTaskSafe(task: TaskInfo) {
+        viewModelScope.launch {
+            addTask(task)
+        }
+    }
 
     //метод для добавления задачи
     suspend fun addTask(task : TaskInfo): Boolean {
@@ -141,14 +164,14 @@ class MyViewModel : ViewModel() {
                 val response = RetrofitInstance.api.registerUser(request)
 
                 if (response.isSuccessful) {
-                    Log.d("REGISTER", "Регистрация успешна")
+                    Log.d("REGISTER111", "Регистрация успешна")
                     true
                 } else {
-                    Log.e("REGISTER", "Ошибка регистрации: ${response.code()}")
+                    Log.e("REGISTER111", "Ошибка регистрации: ${response.code()}")
                     false
                 }
             } catch (e: Exception) {
-                Log.e("REGISTER", "Ошибка сети: ${e.message}")
+                Log.e("REGISTER111", "Ошибка сети: ${e.message}")
                 false
             }
         }
@@ -197,6 +220,59 @@ class MyViewModel : ViewModel() {
             } catch (e: Exception) {
                 errorMessage = "Ошибка сети: ${e.message}"
                 Log.e("TASKS111", "Ошибка сети: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun deleteTask(taskId: Int?): Boolean {
+        if (taskId == null) {
+            Log.e("DELETE_TASK", "Ошибка: taskId не может быть null")
+            return false
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitInstance.api.deleteTask(taskId)
+
+                if (response.isSuccessful) {
+                    Log.d("DELETE_TASK", "Задача $taskId удалена")
+                    _tasks.update { currentTasks ->
+                        currentTasks.filterNot { it.id == taskId }
+                    }
+                    true
+                } else {
+                    Log.e("DELETE_TASK", "Ошибка удаления задачи: ${response.code()}")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("DELETE_TASK", "Ошибка сети: ${e.message}")
+                false
+            }
+        }
+    }
+
+    suspend fun updateTask(task: TaskInfo): Boolean {
+        if (task.id == null) {
+            Log.e("UPDATE_TASK", "Ошибка: taskId не может быть null")
+            return false
+        }
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = task.toTaskRequest() // Создаем запрос до вызова API
+                val response = RetrofitInstance.api.updateTask(task.id, request) // Вызываем updateTask
+
+                if (response.isSuccessful) {
+                    Log.d("UPDATE_TASK", "Задача ${task.id} обновлена")
+                    _tasks.update { currentTasks ->
+                        currentTasks.map { if (it.id == task.id) task else it } // Обновляем список задач
+                    }
+                    true
+                } else {
+                    Log.e("UPDATE_TASK", "Ошибка обновления задачи: ${response.code()}")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("UPDATE_TASK", "Ошибка сети: ${e.message}")
+                false
             }
         }
     }
