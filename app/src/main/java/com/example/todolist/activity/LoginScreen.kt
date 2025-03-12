@@ -136,7 +136,7 @@ fun LoginScreen(navManager: NavManager) {
                             if (userId != null) {
                                 navManager.navigateToMainScreen(userId) // Передаем ID пользователя
                             } else {
-                                errorMessage = "Ошибка входа"
+                                errorMessage = "Error login"
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                             }
                         }

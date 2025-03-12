@@ -28,6 +28,14 @@ data class LoginRequest(
     val password: String
 )
 
+// Модель для запроса регистарции
+data class RegisterRequest(
+    val name: String,
+    val password: String,
+    val email: String,
+
+)
+
 data class TaskResponse(
     val id: Int,
     val title: String,
@@ -53,6 +61,9 @@ interface ApiService {
     @POST("users/loginId")
     suspend fun loginUser(@Body request: LoginRequest): Response<Int>
 
+    @POST("users/add")
+    suspend fun registerUser(@Body request: RegisterRequest): Response<Void>
+
     @GET("tasks/user/{userId}")
     suspend fun getTasksByUserId(@Path("userId") userId: Int): Response<List<TaskResponse>>
 }
@@ -77,6 +88,27 @@ class MyViewModel : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    //метод регистрации
+    suspend fun registerUser(name: String, password: String, email: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = RegisterRequest(name, password, email)
+                val response = RetrofitInstance.api.registerUser(request)
+
+                if (response.isSuccessful) {
+                    Log.d("REGISTER", "Регистрация успешна")
+                    true
+                } else {
+                    Log.e("REGISTER", "Ошибка регистрации: ${response.code()}")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("REGISTER", "Ошибка сети: ${e.message}")
+                false
+            }
+        }
+    }
 
     // Функция для логина
     suspend fun loginUser(email: String, password: String): Int? {
