@@ -1,7 +1,7 @@
 package com.example.todolist.activity
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,12 +27,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -42,12 +43,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todolist.NavManager
 import com.example.todolist.R
-import com.example.todolist.entity.TaskLevel
 import com.example.todolist.entity.TaskInfo
+import com.example.todolist.entity.TaskLevel
 import com.example.todolist.ui.theme.FonColor
 import com.example.todolist.ui.theme.SecondColor
 import com.example.todolist.ui.theme.TextColor
-import java.time.format.TextStyle
+import kotlinx.coroutines.launch
 
 @Composable
 fun TaskLevelSelector(selectedLevel: TaskLevel, onLevelSelected: (TaskLevel) -> Unit) {
@@ -88,11 +89,14 @@ fun TaskLevelSelector(selectedLevel: TaskLevel, onLevelSelected: (TaskLevel) -> 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DoTaskScreen(navManager: NavManager) {
+fun DoTaskScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
 
     var title by remember { mutableStateOf("") }
     var info by remember { mutableStateOf("") }
     var selectedLevel by remember { mutableStateOf(TaskLevel.DAILY) } // Состояние для уровня задачи
+    var errorMessage by remember { mutableStateOf<String?>(null) } // Состояние для ошибки
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current // Получаем контекст внутри Composable
 
     Surface(modifier = Modifier.fillMaxSize(), color = FonColor) {
         Column(
@@ -185,22 +189,30 @@ fun DoTaskScreen(navManager: NavManager) {
         ) {
             Button(
                 onClick = {
-                    /*
+                    if (title.isBlank() || info.isBlank()) {
+                        Toast.makeText(context, "Title and Info cannot be empty", Toast.LENGTH_LONG).show()
+                    }
+                    else {
                     val task = TaskInfo(
-                        id = 0, // Генерируем случайный ID (в реальности лучше использовать базу данных)
                         lvl = selectedLevel,
                         title = title,
                         info = info,
-                        completed = false
+                        completed = false,
+                        user_id = user_id
                     )
+                    coroutineScope.launch {
+                        val isOk = viewModel.addTask(task)
+                        if (isOk == true) {
+                            navManager.navigateToMainScreen()
+                            Toast.makeText(context, "success add task", Toast.LENGTH_SHORT).show()
+                        } else {
+                            errorMessage = "Error add task"
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    }
 
-                     */
-
-                    // Здесь можно передавать task в базу данных или список задач
-                    //println("Создана задача: $task")
-
-                   // navManager.navigateToMainScreen()
-                },
+                }
+                          },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp),

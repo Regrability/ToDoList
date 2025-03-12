@@ -36,6 +36,14 @@ data class RegisterRequest(
 
 )
 
+data class TaskRequest(
+    val title: String,
+    val info: String,
+    val taskLvl: String,
+    val done: Boolean,
+    val user: Int
+)
+
 data class TaskResponse(
     val id: Int,
     val title: String,
@@ -56,6 +64,17 @@ fun TaskResponse.toTaskInfo(): TaskInfo {
     )
 }
 
+fun TaskInfo.toTaskRequest(): TaskRequest {
+    return TaskRequest(
+        title = this.title,
+        info = this.info,
+        taskLvl = this.lvl.name.lowercase(),
+        done = this.completed,
+        user = this.user_id
+    )
+}
+
+
 // Интерфейс API
 interface ApiService {
     @POST("users/loginId")
@@ -64,8 +83,12 @@ interface ApiService {
     @POST("users/add")
     suspend fun registerUser(@Body request: RegisterRequest): Response<Void>
 
+    @POST("tasks/add")
+    suspend fun addTask(@Body request: TaskRequest): Response<Void>
+
     @GET("tasks/user/{userId}")
     suspend fun getTasksByUserId(@Path("userId") userId: Int): Response<List<TaskResponse>>
+
 }
 
 // Объект для Retrofit
@@ -88,6 +111,27 @@ class MyViewModel : ViewModel() {
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
+
+    //метод для добавления задачи
+    suspend fun addTask(task : TaskInfo): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = task.toTaskRequest()
+                val response = RetrofitInstance.api.addTask(request)
+
+                if (response.isSuccessful) {
+                    Log.d("TASK111", "добавлено успешно")
+                    true
+                } else {
+                    Log.e("TASK111", "Ошибка добавления задачи: ${response.code()}")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("TASK111", "Ошибка сети: ${e.message}")
+                false
+            }
+        }
+    }
 
     //метод регистрации
     suspend fun registerUser(name: String, password: String, email: String): Boolean {

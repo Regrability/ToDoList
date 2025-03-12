@@ -6,6 +6,6 @@ data class User_TODOLIST(
     val name: String,
     val email: String,
     val password: String,
-    val path_photo: String?,
+    val path_photo: String? = null,
 
 )

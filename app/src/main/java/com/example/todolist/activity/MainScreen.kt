@@ -298,6 +298,7 @@ fun sortTasks(tasks: List<TaskInfo>, type: Int): List<TaskInfo> {
                 1
             ))
         return listOf}
+
 // fun getInitialTasks() = listOf(
 // TaskInfo(1, TaskLevel.DAILY, "Утренняя зарядка", "Сделать 10-минутную зарядку", true),
 // TaskInfo(2, TaskLevel.WEEKLY, "Чтение книги", "Прочитать 50 страниц книги", false),

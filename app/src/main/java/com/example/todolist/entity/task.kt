@@ -9,7 +9,7 @@ enum class TaskLevel {
 
 data class TaskInfo(
 
-    val id: Int,
+    val id: Int? = null,
     val lvl: TaskLevel,
     val title: String,
     val info: String,

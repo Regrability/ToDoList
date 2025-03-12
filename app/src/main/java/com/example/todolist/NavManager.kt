@@ -2,6 +2,7 @@ package com.example.todolist
 
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -64,6 +65,7 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
 
     val userId = rememberSaveable { mutableStateOf<Int?>(null) } // Переменная для хранения user_id
     val navManager = remember { NavManager(navController, userId) } // Создаём экземпляр NavManager
+    val viewModel: MyViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "hello_screen") {
 
@@ -85,7 +87,12 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             }
         }
         composable("do_task_screen") {
-            DoTaskScreen(navManager)
+            val currentUserId = userId.value
+            if (currentUserId != null) {
+                DoTaskScreen(navManager, viewModel, currentUserId)
+            } else {
+                // Ошибка, если userId не установлен
+            }
         }
         composable("task_screen/{taskId}") { backStackEntry ->
             val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()

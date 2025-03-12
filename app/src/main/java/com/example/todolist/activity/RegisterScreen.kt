@@ -49,6 +49,8 @@ fun RegisterScreen(navManager: NavManager) {
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
     val context = LocalContext.current // Получаем контекст внутри Composable
+    var errorMessage by remember { mutableStateOf<String?>(null) } // Состояние для ошибки
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = Modifier.fillMaxSize(), color = FonColor) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -109,8 +111,7 @@ fun RegisterScreen(navManager: NavManager) {
                 verticalArrangement = Arrangement.Bottom,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var errorMessage by remember { mutableStateOf<String?>(null) } // Состояние для ошибки
-                val coroutineScope = rememberCoroutineScope()
+
                 Button(
                     onClick = {
                         val validationError = validateInput(name, email, password, repeatPassword)
