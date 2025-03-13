@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolist.entity.TaskInfo
 import com.example.todolist.entity.TaskLevel
+import com.example.todolist.entity.User_TODOLIST
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,6 +56,14 @@ data class TaskResponse(
     val user: Int
 )
 
+data class UserResponse(
+    val id: Int,
+    val name: String,
+    val password: String,
+    val email: String,
+    val pathToImage: String
+)
+
 fun TaskResponse.toTaskInfo(): TaskInfo {
     return TaskInfo(
         id = this.id,
@@ -76,6 +85,17 @@ fun TaskInfo.toTaskRequest(): TaskRequest {
     )
 }
 
+fun UserResponse.toUserTODOLIST(): User_TODOLIST {
+    return User_TODOLIST(
+        id = this.id,
+        name = this.name,
+        email = this.email,
+        password = this.password,
+        path_photo = this.pathToImage
+    )
+}
+
+
 
 // Интерфейс API
 interface ApiService {
@@ -90,6 +110,9 @@ interface ApiService {
 
     @GET("tasks/user/{userId}")
     suspend fun getTasksByUserId(@Path("userId") userId: Int): Response<List<TaskResponse>>
+
+    @GET("/users/user/{userId}")
+    suspend fun getUserByUserId(@Path("userId") userId: Int): Response<UserResponse>
 
     @DELETE("tasks/delete/{taskId}")
     suspend fun deleteTask(@Path("taskId") taskId: Int): Response<Void>
@@ -276,5 +299,26 @@ class MyViewModel : ViewModel() {
             }
         }
     }
+
+    suspend fun getUserByUserId(userId: Int): User_TODOLIST? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitInstance.api.getUserByUserId(userId)
+
+                if (response.isSuccessful) {
+                    response.body()?.toUserTODOLIST()?.also { user ->
+                        Log.d("USER_FETCH", "Пользователь загружен: $user")
+                    }
+                } else {
+                    Log.e("USER_FETCH", "Ошибка загрузки пользователя: ${response.code()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("USER_FETCH", "Ошибка сети: ${e.message}")
+                null
+            }
+        }
+    }
+
 
 }

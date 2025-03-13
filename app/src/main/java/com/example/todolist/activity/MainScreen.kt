@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,10 +46,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.todolist.NavManager
 import com.example.todolist.entity.TaskInfo
 import com.example.todolist.entity.TaskLevel
+import com.example.todolist.entity.User_TODOLIST
 import com.example.todolist.ui.theme.DAILYColor
 import com.example.todolist.ui.theme.FonColor
 import com.example.todolist.ui.theme.MONTHLYColor
 import com.example.todolist.ui.theme.SecondColor
+import com.example.todolist.ui.theme.TextColor
 import com.example.todolist.ui.theme.WEEKLYColor
 import com.example.todolist.ui.theme.YEARLYColor
 import kotlinx.coroutines.launch
@@ -194,10 +197,17 @@ fun MainScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
 
     val taskList by viewModel.tasks.collectAsState() // Подписка на StateFlow
 
+    var user by remember { mutableStateOf<User_TODOLIST?>(null) } // Храним загруженного пользователя
+
     var tasks by remember { mutableStateOf(emptyList<TaskInfo>()) }
 
     LaunchedEffect(Unit) {
         viewModel.getTasks(user_id)
+    }
+
+    // Загружаем пользователя при старте
+    LaunchedEffect(Unit) {
+        user = viewModel.getUserByUserId(user_id)
     }
 
     LaunchedEffect(taskList) {
@@ -248,6 +258,32 @@ fun MainScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
                     radius = 350f,
                     center = Offset(0f, 250f)
                 )
+                // Отображение имени пользователя по нижней границе
+                val username = user?.name ?: "null"
+
+                val paint = android.graphics.Paint().apply {
+                    color = android.graphics.Color.WHITE
+                    textSize = 50f
+                    textAlign = android.graphics.Paint.Align.CENTER
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                }
+
+                drawContext.canvas.nativeCanvas.drawText(
+                    "Привет, $username!",
+                    screenWidth / 2,
+                    screenHeight - 40f, // Размещение по нижней границе с небольшим отступом
+                    paint
+                )
+
+            }
+            user?.let {
+                Text(
+                    text = "            Hello," + it.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 220.dp)
+                )
             }
 
             Column(
@@ -270,6 +306,9 @@ fun MainScreen(navManager: NavManager, viewModel: MyViewModel, user_id: Int) {
                         Text(text = "Add task", color = Color.White, fontSize = 18.sp)
                     }
                 }
+
+
+
 
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(tasks) { task ->
